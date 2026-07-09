@@ -1,0 +1,58 @@
+/* ==========================================================================
+   responsive.css - breakpoints
+   Desktop-first overrides. Two breakpoints keep things predictable:
+   56rem (~900px) tablets, 40rem (~640px) phones.
+   ========================================================================== */
+
+@media (max-width: 56rem) {
+  :root { --space-6: 5rem; }
+
+  .about__grid,
+  .contact__grid { grid-template-columns: 1fr; }
+
+  .about__facts {
+    border-left: none;
+    border-top: 1px solid var(--line);
+    padding-left: 0;
+    padding-top: var(--space-3);
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .career__extras { grid-template-columns: 1fr; gap: var(--space-3); }
+
+  .interests__grid { grid-template-columns: 1fr; }
+  .interest-card { min-height: 15rem; }
+}
+
+@media (max-width: 40rem) {
+  :root { --space-6: 4rem; --space-5: 3rem; }
+
+  /* Mobile nav: hide inline links, show menu button + dropdown panel */
+  .nav__links {
+    position: absolute;
+    top: 4.25rem; left: 0; right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    padding: var(--space-2) clamp(1.25rem, 5vw, 3rem) var(--space-3);
+    display: none;
+  }
+  .nav__links.is-open { display: flex; }
+  .nav__links li { width: 100%; }
+  .nav__links a { display: block; padding: 0.75rem 0; font-size: var(--text-base); }
+  .nav__menu-btn { display: block; }
+
+  .hero { min-height: 86vh; }
+  .hero__meta { flex-direction: column; gap: var(--space-1); }
+
+  .timeline__toggle { grid-template-columns: 1fr; }
+  .timeline__dates { white-space: normal; }
+  .timeline__chevron { grid-column: 1; justify-self: start; }
+
+  .post-card { grid-template-columns: 1fr; }
+  .post-card__meta { text-align: left; }
+
+  .footer { flex-direction: column; align-items: flex-start; }
+}

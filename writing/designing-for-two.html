@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Designing an app for exactly two users | Vashisht Kumar</title>
+  <meta name="description" content="What building a couples app taught me about product design when your entire user base fits on a couch.">
+  <link rel="canonical" href="https://vashishtkumar99.github.io/writing/designing-for-two.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="What a places app taught me about ranking things">
+  <meta property="og:description" content="What building a couples app taught me about product design when your entire user base fits on a couch.">
+  <meta property="og:url" content="https://vashishtkumar99.github.io/writing/designing-for-two.html">
+  <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/animations.css">
+  <link rel="stylesheet" href="../styles/responsive.css">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress-bar" id="progressBar" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <div class="container nav__inner">
+      <a class="nav__logo" href="../index.html" aria-label="Vashisht Kumar, home">Vashisht<span class="mark">.</span></a>
+      <button class="nav__menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navLinks" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <nav aria-label="Main">
+        <ul class="nav__links" id="navLinks">
+          <li><a href="../index.html#about">About</a></li>
+          <li><a href="../index.html#career">Career</a></li>
+          <li><a href="../index.html#interests">Interests</a></li>
+          <li><a href="../index.html#now">Now</a></li>
+          <li><a href="../writing.html" aria-current="page">Writing</a></li>
+          <li><a href="../index.html#contact">Contact</a></li>
+          <li>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+              <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+              <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <article class="article container">
+      <p class="eyebrow">AI Building · June 28, 2026</p>
+      <h1 style="font-size: var(--text-2xl); max-width: 20ch;">Designing an app for exactly two users</h1>
+      <p class="article__meta">6 min read</p>
+
+      <div class="article__body">
+        <p>Every product lesson on the internet assumes scale. Growth loops, onboarding funnels, retention curves. I'm building an app whose total addressable market is two people who share a Netflix login, and it turns out almost none of the standard advice applies.</p>
+
+        <p>The app, working name Duet, is a shared home base for a couple: one calendar, shared notes and grocery lists, a watchlist you both add to, savings goals, habits, a milestone timeline of the relationship, a photo memory wall, and a running list of date ideas. Nothing in it is technically novel. What's novel is the constraint.</p>
+
+        <h2>Two users changes everything</h2>
+        <p>With two users, there is no "average user." Every design decision is a negotiation between exactly two sets of preferences, and both people will notice every choice. There's also no anonymity: every grocery item, every unchecked habit, every movie added to the watchlist has a name attached. The app is less a product and more a shared room, and you design a room differently than a stadium.</p>
+
+        <blockquote>At scale you design for behavior. At two, you design for a relationship.</blockquote>
+
+        <h2>The features that earn their place</h2>
+        <p>My rule is that every screen has to reduce a real recurring conversation: "what's on this weekend," "what do we need from the store," "what was that show we wanted to watch." The milestone timeline was almost cut as sentimental, until I realized it's the feature that makes the app feel like ours instead of another productivity tool. Sentiment, it turns out, is retention.</p>
+
+        <h2>Building it with AI</h2>
+        <p>The whole thing started as a written spec in plain English, then became a working React prototype over a few evenings with AI handling the syntax while I handled the decisions. That workflow keeps surprising me: the bottleneck is never the code anymore. It's knowing what the thing should do, which no model can decide for you.</p>
+
+        <p>Next step is turning the prototype into a real mobile app. I'll write about that leap when I've survived it.</p>
+
+        <p style="margin-top: var(--space-4);"><a class="link" href="../writing.html">← All writing</a></p>
+      </div>
+    </article>
+
+    <footer class="container footer">
+      <span>© 2026 Vashisht Kumar</span>
+      <button class="vinyl" id="vinyl" aria-label="A record. Give it a spin.">💿</button>
+    </footer>
+  </main>
+
+  <script src="../js/app.js" defer></script>
+  <script src="../js/animations.js" defer></script>
+</body>
+</html>

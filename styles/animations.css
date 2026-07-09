@@ -1,0 +1,101 @@
+/* ==========================================================================
+   animations.css - scroll reveals, keyframes, motion preferences
+   All reveal classes are activated by IntersectionObserver in js/animations.js.
+   ========================================================================== */
+
+/* Reveal on scroll: fade + rise */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.8s var(--ease-out),
+    transform 0.8s var(--ease-out);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Staggered children - parent gets .reveal-stagger, children animate in order */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 0.7s var(--ease-out);
+}
+.reveal-stagger.is-visible > * {
+  opacity: 1;
+  transform: none;
+}
+.reveal-stagger.is-visible > :nth-child(1) { transition-delay: 0.05s; }
+.reveal-stagger.is-visible > :nth-child(2) { transition-delay: 0.15s; }
+.reveal-stagger.is-visible > :nth-child(3) { transition-delay: 0.25s; }
+.reveal-stagger.is-visible > :nth-child(4) { transition-delay: 0.35s; }
+.reveal-stagger.is-visible > :nth-child(5) { transition-delay: 0.45s; }
+.reveal-stagger.is-visible > :nth-child(6) { transition-delay: 0.55s; }
+
+/* Hero entrance - plays once on load, after the loader clears */
+.hero-enter {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: heroEnter 0.9s var(--ease-out) forwards;
+}
+.hero-enter:nth-child(2) { animation-delay: 0.15s; }
+.hero-enter:nth-child(3) { animation-delay: 0.3s; }
+.hero-enter:nth-child(4) { animation-delay: 0.45s; }
+
+@keyframes heroEnter {
+  to { opacity: 1; transform: none; }
+}
+
+/* Timeline dot pulse when the section first appears */
+.timeline__item.is-visible::before {
+  animation: dotPulse 0.6s var(--ease-out);
+}
+@keyframes dotPulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--sage) 45%, transparent); }
+  100% { box-shadow: 0 0 0 12px transparent; }
+}
+
+/* Scroll hint bounce */
+.scroll-hint { animation: hintFloat 2.6s var(--ease) infinite; }
+@keyframes hintFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(6px); }
+}
+
+/* Vinyl spin (footer easter egg) */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Loader wordmark breathe */
+.loader span { animation: breathe 1.4s var(--ease) infinite; }
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+/* Lazy images: fade in once loaded (JS adds .is-loaded) */
+img[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+}
+img[loading="lazy"].is-loaded { opacity: 1; }
+
+/* --------------------------------------------------------------------------
+   Reduced motion: turn everything off, show content immediately
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal, .reveal-stagger > *, .hero-enter {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

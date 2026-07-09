@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vashisht Kumar - building, mixing, learning in public</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Vashisht Kumar is a deals consultant in New York who builds small software tools, learns to DJ, and writes about systems, money, and music.">
+  <link rel="canonical" href="https://vashishtkumar99.github.io/">
+
+  <!-- OpenGraph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Vashisht Kumar">
+  <meta property="og:description" content="Building, mixing, and learning in public. A personal corner of the internet.">
+  <meta property="og:url" content="https://vashishtkumar99.github.io/">
+  <meta property="og:image" content="https://vashishtkumar99.github.io/assets/images/og-cover.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <link rel="stylesheet" href="styles/responsive.css">
+
+  <!-- Set theme before paint to avoid a flash of the wrong mode -->
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Loading overlay -->
+  <div class="loader" id="loader" aria-hidden="true"><span>VK</span></div>
+
+  <!-- ============================ Navigation ============================ -->
+  <header class="nav" id="nav">
+    <div class="container nav__inner">
+      <a class="nav__logo" href="/" aria-label="Vashisht Kumar, home">Vashisht<span class="mark">.</span></a>
+
+      <button class="nav__menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navLinks" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      <nav aria-label="Main">
+        <ul class="nav__links" id="navLinks">
+          <li><a href="#about">About</a></li>
+          <li><a href="#career">Career</a></li>
+          <li><a href="#interests">Interests</a></li>
+          <li><a href="#now">Now</a></li>
+          <li><a href="writing.html">Writing</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+              <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+              <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============================ Hero ============================ -->
+    <section class="hero container" aria-label="Introduction">
+      <div>
+        <p class="hero__hello hero-enter">New York City, usually near a window seat</p>
+        <h1 class="hero-enter">Vashisht Kumar</h1>
+        <p class="hero__rotator hero-enter">
+          <span class="mark" aria-hidden="true">⁂</span>
+          <span class="rotator__word" id="rotatorWord">Consultant.</span>
+        </p>
+        <div class="hero__meta hero-enter">
+          <span>Deals by day</span>
+          <span>Decks by night</span>
+          <span>Curious in between</span>
+        </div>
+      </div>
+      <p class="scroll-hint" aria-hidden="true">Scroll</p>
+    </section>
+
+    <!-- ============================ About ============================ -->
+    <section class="section" id="about">
+      <div class="container">
+        <p class="eyebrow reveal">About</p>
+        <div class="about__grid">
+          <div class="reveal">
+            <h2>Hi, I'm Vashisht.</h2>
+            <p>I spend my weekdays inside deals, pulling apart companies' numbers to figure out what's really going on underneath. Before that, I spent four years in supply chain consulting, moving boxes around the world on spreadsheets and occasionally in real life. Somewhere along the way I realized the thing I actually love is systems: how they work, where they break, and what happens when you rebuild them a little better.</p>
+            <p>That curiosity leaks everywhere. I build small software tools for problems that annoy me: an app for two, an automation that saves my team hours, half-finished trading experiments. I'm teaching myself to DJ, which turns out to be another systems problem, just one you can dance to. And I fly a lot, mostly to eat things and get lost in new cities.</p>
+            <p>This site is my corner of the internet: what I'm building, what I'm learning, and what's currently on repeat.</p>
+          </div>
+          <dl class="about__facts reveal-stagger">
+            <div>
+              <dt>Currently</dt>
+              <dd>Deal Strategy &amp; Value Creation, PwC New York</dd>
+            </div>
+            <div>
+              <dt>Previously</dt>
+              <dd>Supply chain consulting across the US, India, and Southeast Asia</dd>
+            </div>
+            <div>
+              <dt>Learning</dt>
+              <dd>DJing, AI-assisted building, better writing</dd>
+            </div>
+            <div>
+              <dt>Always</dt>
+              <dd>Planning the next trip</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ Career ============================ -->
+    <section class="section" id="career">
+      <div class="container">
+        <p class="eyebrow reveal">Career</p>
+        <h2 class="reveal">Where I've worked</h2>
+        <p class="reveal" style="margin-bottom: var(--space-4); color: var(--ink-soft);">Six years across strategy, deals, and supply chains, on three continents. Tap any role to expand it.</p>
+
+        <ol class="timeline">
+          <!-- PwC -->
+          <li class="timeline__item reveal">
+            <button class="timeline__toggle" aria-expanded="false">
+              <span>
+                <span class="timeline__company">PwC</span>
+                <span class="timeline__role">Senior Associate, Deal Strategy &amp; Value Creation · New York</span>
+              </span>
+              <span class="timeline__dates">Jun 2025 - Present</span>
+              <svg class="timeline__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="timeline__panel">
+              <div class="timeline__panel-inner">
+                <ul>
+                  <li>Identified revenue, margin, and pipeline risks across 3 buy-side deals; findings led clients to reprice or walk away from transactions.</li>
+                  <li>Supported 2 closed sell-side deals with ARR and price/volume/mix analyses that held up under buyer due diligence.</li>
+                  <li>Co-led 4 portfolio company engagements, running client communication and guiding 1–2 analysts to the final deliverable.</li>
+                  <li>Built AI-assisted practice tools that cut client data QC from 2 hours to minutes: a data profiling automation, a custom Excel ribbon, and LLM-integrated Power BI standards for DAX generation.</li>
+                </ul>
+                <div class="tags">
+                  <span class="tag">M&amp;A diligence</span><span class="tag">Excel</span><span class="tag">Power BI</span><span class="tag">LLM tooling</span><span class="tag">DAX</span>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Miebach - Senior Consultant -->
+          <li class="timeline__item reveal">
+            <button class="timeline__toggle" aria-expanded="false">
+              <span>
+                <span class="timeline__company">Miebach Consulting</span>
+                <span class="timeline__role">Senior Consultant · NA Lead, Network Design Center of Excellence · Indianapolis</span>
+              </span>
+              <span class="timeline__dates">2023 - May 2025</span>
+              <svg class="timeline__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="timeline__panel">
+              <div class="timeline__panel-inner">
+                <ul>
+                  <li>Led S&amp;OP process design and OMP implementation for a large CPG manufacturer, owning a workstream end-to-end across internal teams and external partners.</li>
+                  <li>Managed 5 projects across network design and S&amp;OE planning: scope, timeline, and budget.</li>
+                  <li>Delivered work that generated 4 follow-up projects worth 1–2x the original contract value.</li>
+                  <li>Appointed Center of Excellence lead: designed and delivered network design trainings for 50–100 consultants globally.</li>
+                </ul>
+                <div class="tags">
+                  <span class="tag">S&amp;OP</span><span class="tag">OMP</span><span class="tag">Network design</span><span class="tag">Team leadership</span>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Miebach - Consultant, Bengaluru -->
+          <li class="timeline__item reveal">
+            <button class="timeline__toggle" aria-expanded="false">
+              <span>
+                <span class="timeline__company">Miebach Consulting</span>
+                <span class="timeline__role">Consultant · Bengaluru, India</span>
+              </span>
+              <span class="timeline__dates">2022 - 2023</span>
+              <svg class="timeline__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="timeline__panel">
+              <div class="timeline__panel-inner">
+                <ul>
+                  <li>Owned analysis workstreams across 6 distribution, inventory, and manufacturing optimization projects in 5 Southeast Asian countries, identifying 10–12% supply chain cost savings.</li>
+                  <li>Managed 2 client engagements end-to-end across consumer goods, cosmetics, and chemical industries.</li>
+                  <li>Led bi-weekly knowledge-sharing sessions for 50+ regional attendees.</li>
+                </ul>
+                <div class="tags">
+                  <span class="tag">Optimization</span><span class="tag">Client management</span><span class="tag">APAC</span>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Miebach - Analyst -->
+          <li class="timeline__item reveal">
+            <button class="timeline__toggle" aria-expanded="false">
+              <span>
+                <span class="timeline__company">Miebach Consulting</span>
+                <span class="timeline__role">Analyst · Indianapolis</span>
+              </span>
+              <span class="timeline__dates">Jun 2021 - 2022</span>
+              <svg class="timeline__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="timeline__panel">
+              <div class="timeline__panel-inner">
+                <ul>
+                  <li>Built supply chain models across 7 fashion and retail engagements, reducing costs 5–10% with Llamasoft's optimization suite.</li>
+                  <li>Ran on-site factory assessments with clients to validate data and find operational inefficiencies.</li>
+                  <li>Created an automated SQL + Power BI workflow to interpret modeling results, saving 20+ hours per strategy project and was adopted by the whole team.</li>
+                </ul>
+                <div class="tags">
+                  <span class="tag">SQL</span><span class="tag">Power BI</span><span class="tag">Llamasoft</span><span class="tag">Automation</span>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Home Depot practicum -->
+          <li class="timeline__item reveal">
+            <button class="timeline__toggle" aria-expanded="false">
+              <span>
+                <span class="timeline__company">The Home Depot</span>
+                <span class="timeline__role">Supply Chain Consulting Practicum · Bloomington</span>
+              </span>
+              <span class="timeline__dates">Aug - Dec 2020</span>
+              <svg class="timeline__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="timeline__panel">
+              <div class="timeline__panel-inner">
+                <ul>
+                  <li>Faculty-selected for a transportation and delivery optimization project for a Fortune 500 company.</li>
+                  <li>Recommended vendor and third-party backhauls to cut "empty" fleet miles, with savings in the hundreds of thousands of dollars.</li>
+                  <li>Built an Excel Solver model showing the case for switching bulk distribution centers to 7-day operations.</li>
+                </ul>
+                <div class="tags">
+                  <span class="tag">Excel Solver</span><span class="tag">Logistics</span>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ol>
+
+        <div class="career__extras reveal-stagger">
+          <div>
+            <h3>Education</h3>
+            <ul>
+              <li><strong>Indiana University, Kelley School of Business</strong></li>
+              <li>B.S. in Business, May 2021 · GPA 3.93</li>
+              <li>Supply Chain, Information Systems &amp; Business Analytics</li>
+              <li>Kelley Honors Program: 1 of 200 faculty-selected students</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Skills</h3>
+            <ul>
+              <li>Python · SQL · Excel · Alteryx · DAX</li>
+              <li>Power BI · Tableau</li>
+              <li>LLM integration · prompt engineering · AI-assisted tooling</li>
+              <li>Coupa Supply Chain Guru · Starboard</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Certifications</h3>
+            <ul>
+              <li>Lean Six Sigma Green Belt, Kelley School of Business</li>
+              <li style="margin-top: var(--space-2);"><a class="btn" href="assets/Vashisht_Kumar_Resume.pdf" download>Download résumé (PDF)</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ Interests ============================ -->
+    <section class="section" id="interests">
+      <div class="container">
+        <p class="eyebrow reveal">Interests</p>
+        <h2 class="reveal">The fun stuff</h2>
+        <p class="reveal" style="margin-bottom: var(--space-4); color: var(--ink-soft);">Two obsessions, each with its own room in this house.</p>
+
+        <div class="interests__grid reveal-stagger">
+          <a class="interest-card" href="vibe-coding.html">
+            <h3>Vibe Coding</h3>
+            <p>Small tools I build with AI when a problem annoys me enough. An app for couples to run their shared life, a script that mapped my entire flight history, and a trading workflow still safely in the planning stage.</p>
+            <span class="interest-card__cta">Enter the workshop →</span>
+            <span class="interest-card__glyph" aria-hidden="true">{ }</span>
+          </a>
+          <a class="interest-card" href="dj.html">
+            <h3>DJ Journey</h3>
+            <p>Teaching myself to mix with an AI-built 12-week curriculum. The plan, the gear, the practice log, and eventually: mixes I'm not embarrassed to share.</p>
+            <span class="interest-card__cta">Step into the booth →</span>
+            <span class="interest-card__glyph" aria-hidden="true">◉</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ Now ============================ -->
+    <section class="section" id="now">
+      <div class="container">
+        <p class="eyebrow reveal">Now</p>
+        <h2 class="reveal">What I'm up to</h2>
+        <p class="reveal" style="color: var(--ink-soft);">Inspired by <a class="link" href="https://nownownow.com/about" target="_blank" rel="noopener">nownownow.com</a>: a snapshot of the present, updated when life changes.</p>
+
+        <div class="now__grid reveal-stagger" style="margin-top: var(--space-4);">
+          <div class="now__col">
+            <h3>Building</h3>
+            <ul>
+              <li>Duet, an app for couples to run their shared life together</li>
+              <li>A semi-automated trading workflow (planning stage, on purpose)</li>
+            </ul>
+          </div>
+          <div class="now__col">
+            <h3>Learning</h3>
+            <ul>
+              <li>DJing, self-taught with an AI-built curriculum</li>
+              <li>Writing more, editing less</li>
+            </ul>
+          </div>
+          <div class="now__col">
+            <h3>Listening</h3>
+            <ul>
+              <li>Moody, lyric-forward pop-rap</li>
+              <li>Anything with a good bassline at 122 BPM</li>
+            </ul>
+          </div>
+          <div class="now__col">
+            <h3>Excited about</h3>
+            <ul>
+              <li>What AI tools let one curious person build alone</li>
+              <li>The next stamp in the passport</li>
+            </ul>
+          </div>
+        </div>
+        <p class="now__updated reveal">Last updated: July 2026</p>
+      </div>
+    </section>
+
+    <!-- ============================ Writing preview ============================ -->
+    <section class="section" id="writing">
+      <div class="container">
+        <p class="eyebrow reveal">Writing</p>
+        <h2 class="reveal">Recent notes</h2>
+        <div class="post-list reveal-stagger" id="recentPosts" style="margin-top: var(--space-3);">
+          <!-- Rendered from js/app.js POSTS data -->
+        </div>
+        <p class="reveal" style="margin-top: var(--space-3);"><a class="link" href="writing.html">All writing →</a></p>
+      </div>
+    </section>
+
+    <!-- ============================ Contact ============================ -->
+    <section class="section" id="contact">
+      <div class="container">
+        <p class="eyebrow reveal">Contact</p>
+        <div class="contact__grid">
+          <div class="reveal">
+            <h2>Say hello</h2>
+            <p style="color: var(--ink-soft);">Best way to reach me is email. I read everything, even if I'm slow on a travel week.</p>
+            <p class="contact__email">
+              <a class="link" href="mailto:vashisht99kumar@gmail.com">vashisht99kumar@gmail.com</a>
+              <button class="copy-btn" id="copyEmail" data-email="vashisht99kumar@gmail.com">Copy</button>
+            </p>
+            <ul class="socials">
+              <li><a class="link" href="https://www.linkedin.com/in/vashishtkumar/" target="_blank" rel="noopener">LinkedIn</a></li>
+              <li><a class="link" href="https://github.com/vashishtkumar99" target="_blank" rel="noopener">GitHub</a></li>
+              <li><a class="link" href="https://www.instagram.com/vash99" target="_blank" rel="noopener">Instagram</a></li>
+              <li><a class="link" href="https://open.spotify.com/user/z9gkb1hpstepxz9as33qjwstt?si=893effffeba64bb4" target="_blank" rel="noopener">Spotify</a></li>
+            </ul>
+          </div>
+          <form class="form reveal" id="contactForm" novalidate>
+            <div>
+              <label for="cf-name">Name</label>
+              <input id="cf-name" name="name" type="text" autocomplete="name" required>
+            </div>
+            <div>
+              <label for="cf-email">Email</label>
+              <input id="cf-email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div>
+              <label for="cf-message">Message</label>
+              <textarea id="cf-message" name="message" rows="4" required></textarea>
+            </div>
+            <button class="btn btn--solid" type="submit">Send message</button>
+            <p class="form__status" id="formStatus" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ Footer ============================ -->
+    <footer class="container footer">
+      <span>© 2026 Vashisht Kumar · Built by hand, no template</span>
+      <button class="vinyl" id="vinyl" aria-label="A record. Give it a spin.">💿</button>
+    </footer>
+  </main>
+
+  <script src="js/app.js" defer></script>
+  <script src="js/animations.js" defer></script>
+</body>
+</html>
