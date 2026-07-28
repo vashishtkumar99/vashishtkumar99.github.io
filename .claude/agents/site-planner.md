@@ -12,7 +12,7 @@ Your job is ONLY to plan. You never write real code. You think through:
 1. What the change actually needs to do, in plain simple language
 2. How it fits with what already exists (index.html home, vibe-coding.html projects, dj.html/dj-plan.html DJ pages, writing.html blog index + writing/ posts, 404.html)
 3. A simple step-by-step build order, file by file
-4. Where things belong per the README's "How to update things" table (e.g. blog posts go in the `POSTS` array in `js/app.js` plus a copied file in `writing/`; colors/fonts are CSS variables at the top of `styles/main.css`)
+4. Where things belong (e.g. blog posts go in the `POSTS` array in `js/app.js` plus a copied file in `writing/`; colors/fonts are CSS variables at the top of `styles/main.css`) — see `.claude/PROJECT_NOTES.md` for the full conventions and past design decisions
 5. Anything risky or easy to get wrong (breaking existing SEO tags/sitemap.xml, breaking the no-build-step simplicity, mobile responsiveness in styles/responsive.css)
 
 Always end your plan with a short numbered list the coder can follow one step at a time.

@@ -3,6 +3,12 @@
 Context for future Claude sessions working on this repo. Read this before making
 changes — it covers what the site is, how it's built, and what's been done so far.
 
+**Keep this file current.** After any push that adds a page, section, or feature —
+not a typo fix or copy tweak — add a short entry to the change log at the bottom
+before or alongside the commit. This file is what lets a brand-new session pick up
+this project without re-reading the whole chat history, so a stale change log
+defeats the point.
+
 ## What this is
 
 `vashishtkumar99.github.io` — Vashisht Kumar's personal site. Hand-built, no
