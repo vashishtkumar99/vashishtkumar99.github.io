@@ -13,30 +13,59 @@
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/main.css">
   <link rel="stylesheet" href="styles/animations.css">
   <link rel="stylesheet" href="styles/responsive.css">
   <style>
     /* ===== Page chrome around the controller: the site's own components,
        not the hardware skin. Keeps Inter/sentence case, matches .btn/.chip. ===== */
-    .dj-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
+    .dj-controls { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin-bottom: var(--space-2); }
     #controllerSelect {
       font: inherit; font-size: var(--text-sm); color: var(--ink); background: var(--paper);
-      border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem 1rem;
+      border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem 1.2rem;
       cursor: pointer; transition: border-color 0.25s var(--ease);
     }
     #controllerSelect:hover, #controllerSelect:focus { border-color: var(--sage); outline: none; }
-    .btn.is-connected { background: var(--sage-tint); border-color: var(--sage); color: var(--sage-deep); }
-    .btn.is-recording { border-color: #b3453d; color: #b3453d; }
-    .dj-status { font-size: var(--text-sm); color: var(--ink-soft); min-height: 1.4em; margin: 0 0 var(--space-3); }
+
+    /* Custom select: hide the native arrow, draw our own so it doesn't
+       look like a stock browser dropdown. */
+    #controllerSelect {
+      appearance: none; -webkit-appearance: none; -moz-appearance: none;
+      padding-right: 2.6rem;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%234A4740' stroke-width='1.8'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+    }
+    [data-theme="dark"] #controllerSelect {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23C6C2B5' stroke-width='1.8'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    }
+
+    /* MIDI connection badge — same dot+label language as the project
+       status tags on vibe-coding.html. */
+    .status--off { color: var(--gray); }
+    .status--off::before { background: var(--gray); }
+
+    .dj-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .dj-row__label { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); margin-right: 0.25rem; }
+    .dj-session { margin-bottom: var(--space-4); }
+    .chip.is-recording { border-color: #b3453d; color: #b3453d; }
+
+    .dj-status { font-size: var(--text-sm); color: var(--ink-soft); min-height: 1.4em; margin: 0 0 var(--space-2); }
     .dj-status b { color: var(--sage-deep); }
     .dj-status .warn { color: var(--ink); }
 
-    .dj-log { margin-top: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-3); }
+    .dj-log { margin-top: var(--space-2); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-3); }
     .dj-log__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); margin-bottom: 0.6rem; }
     .dj-log__head h3 { font-size: var(--text-lg); margin: 0; }
-    .dj-log__head span { font-size: var(--text-xs); color: var(--gray); white-space: nowrap; }
+    .dj-log__meta { display: flex; align-items: center; gap: 0.75rem; }
+    .dj-log__meta span { font-size: var(--text-xs); color: var(--gray); white-space: nowrap; }
+    .dj-log__clear {
+      font: inherit; font-size: var(--text-xs); color: var(--gray); background: none; border: none;
+      padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+      transition: color 0.2s var(--ease);
+    }
+    .dj-log__clear:hover { color: var(--sage-deep); }
     .dj-log__body { max-height: 220px; overflow-y: auto; font-size: var(--text-sm); color: var(--ink-soft); line-height: 1.8; }
     .dj-log__body .empty { color: var(--gray); }
     .dj-log__body .t { color: var(--gray); margin-right: 0.6rem; font-size: var(--text-xs); }
@@ -45,8 +74,8 @@
     .dj-log__body .tag-replay { color: var(--ink-soft); margin-right: 0.5rem; font-weight: 600; font-size: var(--text-xs); }
     .dj-log__body div.fresh .name { color: var(--sage-deep); }
 
-    .dj-advanced { margin-top: var(--space-3); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-    .dj-advanced__label { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); margin-right: 0.25rem; }
+    .dj-advanced { margin-top: var(--space-3); }
+    .dj-advanced[hidden] { display: none; }
 
     /* ===== The controller unit itself — scoped to #mixTracker so its
        hardware-label styling never leaks into (or gets clobbered by) the
@@ -56,7 +85,7 @@
       --mt-line: #3a3a40; --mt-ink: #e8e6e1; --mt-dim: #909098;
       --mt-org: #f59b2d; --mt-org-dim: #a96f24;
       --mt-red: #ff3434; --mt-grn: #39c25a;
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: var(--font-body);
     }
     #mixTracker * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -213,19 +242,24 @@
     <section class="section container" style="padding-top: 0;">
       <p class="eyebrow reveal">Interactive</p>
       <h2 class="reveal" style="font-size: var(--text-xl);">Choose your controller</h2>
-      <p class="reveal" style="color: var(--ink-soft); max-width: var(--measure);">Pick the model from the dropdown below to switch layouts. Hit "Connect MIDI" with the controller plugged in to mirror it live, or use "Learn" to teach the page a custom mapping.</p>
+      <p class="reveal" style="color: var(--ink-soft); max-width: var(--measure);">Pick a model, then connect the real controller over USB to mirror it live.</p>
 
       <div class="dj-controls reveal">
         <select id="controllerSelect" aria-label="Choose controller"></select>
-        <button class="btn btn--solid" id="midiBtn">Connect MIDI</button>
-        <button class="btn" id="recBtn">Rec moves</button>
-        <button class="btn" id="replayBtn">Replay</button>
-        <button class="btn" id="saveSesBtn">Save mix</button>
-        <button class="btn" id="loadSesBtn">Load mix</button>
-        <button class="btn" id="videoBtn">Record video</button>
-        <input type="file" id="loadSesFile" accept=".json" hidden>
+        <button class="btn" id="midiBtn">Connect MIDI</button>
+        <span class="status status--live" id="midiBadge" hidden>MIDI connected</span>
       </div>
       <p class="dj-status" id="status"></p>
+
+      <div class="dj-row dj-session reveal">
+        <span class="dj-row__label">Session</span>
+        <button class="chip" id="recBtn">Rec moves</button>
+        <button class="chip" id="replayBtn">Replay</button>
+        <button class="chip" id="saveSesBtn">Save mix</button>
+        <button class="chip" id="loadSesBtn">Load mix</button>
+        <button class="chip" id="videoBtn">Record video</button>
+        <input type="file" id="loadSesFile" accept=".json" hidden>
+      </div>
 
       <div id="mixTracker" class="reveal">
         <div class="controller-scroll">
@@ -234,16 +268,21 @@
       </div>
 
       <div class="dj-log reveal">
-        <div class="dj-log__head"><h3>Press log</h3><span id="count">0 events</span></div>
+        <div class="dj-log__head">
+          <h3>Press log</h3>
+          <div class="dj-log__meta">
+            <span id="count">0 events</span>
+            <button class="dj-log__clear" id="clearBtn">Clear</button>
+          </div>
+        </div>
         <div class="dj-log__body" id="log"><div class="empty">Nothing yet, click a pad or knob above.</div></div>
       </div>
 
-      <div class="dj-advanced reveal">
-        <span class="dj-advanced__label">Advanced</span>
+      <div class="dj-row dj-advanced reveal" hidden>
+        <span class="dj-row__label">Advanced</span>
         <button class="chip" id="learnBtn">Learn</button>
         <button class="chip" id="exportBtn">Save map</button>
         <button class="chip" id="importBtn">Load map</button>
-        <button class="chip" id="clearBtn">Clear log</button>
         <input type="file" id="importFile" accept=".json" hidden>
       </div>
     </section>
@@ -531,8 +570,7 @@
           let names = [];
           access.inputs.forEach(inp => { inp.onmidimessage = onMIDI; names.push(inp.name); });
           midiReady = names.length > 0;
-          $('midiBtn').classList.toggle('is-connected', midiReady);
-          $('midiBtn').textContent = midiReady ? 'MIDI Connected' : 'Connect MIDI';
+          $('midiBadge').hidden = !midiReady;
           setStatus(midiReady ? `<b>Connected:</b> ${names.join(', ')}` : '<span class="warn">No device found. Plug in over USB and click again.</span>');
         };
         hook();
