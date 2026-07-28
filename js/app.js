@@ -13,14 +13,6 @@
    -------------------------------------------------------------------------- */
 const POSTS = [
   {
-    title: "Designing an app for exactly two users",
-    excerpt: "Every product lesson assumes you're building for millions. I'm building for a population of two, and the rules are different.",
-    url: "writing/designing-for-two.html",
-    date: "2026-06-28",
-    category: "AI Building",
-    minutes: 6,
-  },
-  {
     title: "My DJ teacher is a language model",
     excerpt: "Two weeks into teaching myself to DJ with an AI-built 12-week curriculum. Here's the plan, and what's already surprised me.",
     url: "writing/ai-dj-teacher.html",

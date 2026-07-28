@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Virtual DJ Controller | Vashisht Kumar</title>
-  <meta name="description" content="An in-browser DDJ-FLX4 / FLX2 / XDJ-RR you can click, or connect the real thing over USB via Web MIDI and watch every pad and knob light up live.">
+  <meta name="description" content="An in-browser DDJ-FLX4 / FLX2 you can click, or connect the real thing over USB via Web MIDI and watch every pad and knob light up live.">
   <link rel="canonical" href="https://vashishtkumar99.github.io/dj-controller.html">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Virtual DJ Controller | Vashisht Kumar">
@@ -13,46 +13,52 @@
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/main.css">
   <link rel="stylesheet" href="styles/animations.css">
   <link rel="stylesheet" href="styles/responsive.css">
   <style>
-    /* ===== Virtual controller — scoped to #mixTracker so it never leaks
-       into (or gets clobbered by) the site's own .btn / .status / etc. ===== */
+    /* ===== Page chrome around the controller: the site's own components,
+       not the hardware skin. Keeps Inter/sentence case, matches .btn/.chip. ===== */
+    .dj-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
+    #controllerSelect {
+      font: inherit; font-size: var(--text-sm); color: var(--ink); background: var(--paper);
+      border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem 1rem;
+      cursor: pointer; transition: border-color 0.25s var(--ease);
+    }
+    #controllerSelect:hover, #controllerSelect:focus { border-color: var(--sage); outline: none; }
+    .btn.is-connected { background: var(--sage-tint); border-color: var(--sage); color: var(--sage-deep); }
+    .btn.is-recording { border-color: #b3453d; color: #b3453d; }
+    .dj-status { font-size: var(--text-sm); color: var(--ink-soft); min-height: 1.4em; margin: 0 0 var(--space-3); }
+    .dj-status b { color: var(--sage-deep); }
+    .dj-status .warn { color: var(--ink); }
+
+    .dj-log { margin-top: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-3); }
+    .dj-log__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); margin-bottom: 0.6rem; }
+    .dj-log__head h3 { font-size: var(--text-lg); margin: 0; }
+    .dj-log__head span { font-size: var(--text-xs); color: var(--gray); white-space: nowrap; }
+    .dj-log__body { max-height: 220px; overflow-y: auto; font-size: var(--text-sm); color: var(--ink-soft); line-height: 1.8; }
+    .dj-log__body .empty { color: var(--gray); }
+    .dj-log__body .t { color: var(--gray); margin-right: 0.6rem; font-size: var(--text-xs); }
+    .dj-log__body .tag-midi { color: var(--sage-deep); margin-right: 0.5rem; font-weight: 600; font-size: var(--text-xs); }
+    .dj-log__body .tag-map { color: #a8842c; margin-right: 0.5rem; font-weight: 600; font-size: var(--text-xs); }
+    .dj-log__body .tag-replay { color: var(--ink-soft); margin-right: 0.5rem; font-weight: 600; font-size: var(--text-xs); }
+    .dj-log__body div.fresh .name { color: var(--sage-deep); }
+
+    .dj-advanced { margin-top: var(--space-3); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .dj-advanced__label { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); margin-right: 0.25rem; }
+
+    /* ===== The controller unit itself — scoped to #mixTracker so its
+       hardware-label styling never leaks into (or gets clobbered by) the
+       site's own classes. No card, no background: it sits on the page. ===== */
     #mixTracker {
-      --mt-bg: #0b0b0d; --mt-panel: #222226; --mt-pad-face: #1a1a1d;
+      --mt-panel: #222226; --mt-pad-face: #1a1a1d;
       --mt-line: #3a3a40; --mt-ink: #e8e6e1; --mt-dim: #909098;
-      --mt-org: var(--sage); --mt-org-dim: var(--sage-deep);
+      --mt-org: #f59b2d; --mt-org-dim: #a96f24;
       --mt-red: #ff3434; --mt-grn: #39c25a;
-      background: var(--mt-bg); color: var(--mt-ink);
       font-family: 'IBM Plex Mono', monospace;
-      padding: 24px 14px 32px;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--line);
     }
     #mixTracker * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-    #mixTracker .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; align-items: center; }
-    #mixTracker .btn, #mixTracker select {
-      font-family: inherit; font-size: 11.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
-      background: var(--mt-panel); color: var(--mt-ink); border: 1px solid var(--mt-line); border-radius: 6px;
-      padding: 9px 13px; cursor: pointer; transition: border-color .15s, color .15s;
-    }
-    #mixTracker .btn:hover, #mixTracker select:hover { border-color: var(--mt-org); color: var(--mt-org); }
-    #mixTracker .btn:focus-visible, #mixTracker select:focus-visible { outline: 2px solid var(--mt-org); outline-offset: 2px; }
-    #mixTracker .btn.primary { border-color: var(--mt-org); color: var(--mt-org); }
-    #mixTracker .btn.on { border-color: var(--mt-grn); color: var(--mt-grn); }
-    #mixTracker .btn.rec { border-color: var(--mt-red); color: var(--mt-red); }
-    #mixTracker .btn.mini { font-size: 9.5px; padding: 6px 10px; color: var(--mt-dim); }
-    #mixTracker .btn.mini:hover { border-color: var(--mt-org); color: var(--mt-org); }
-    #mixTracker .btn.mini.rec { border-color: var(--mt-red); color: var(--mt-red); }
-    #mixTracker .group { display: flex; gap: 0; border: 1px solid var(--mt-line); border-radius: 6px; overflow: hidden; }
-    #mixTracker .group .btn { border: none; border-radius: 0; border-right: 1px solid var(--mt-line); }
-    #mixTracker .group .btn:last-child { border-right: none; }
-    #mixTracker .status { font-size: 11px; color: var(--mt-dim); letter-spacing: .05em; margin: 2px 0 12px; min-height: 15px; }
-    #mixTracker .status b { color: var(--mt-grn); font-weight: 600; }
-    #mixTracker .status .warn { color: var(--mt-org); }
 
     #mixTracker .controller-scroll { overflow-x: auto; border-radius: 16px; }
     #mixTracker .controller {
@@ -80,7 +86,7 @@
       color: #1a0505 !important; box-shadow: 0 0 16px rgba(255,52,52,.65) !important;
     }
     #mixTracker .armed { outline: 2px dashed var(--mt-org) !important; outline-offset: 2px; animation: mtPulse 1s infinite; }
-    @keyframes mtPulse { 50% { outline-color: rgba(143,172,144,.25); } }
+    @keyframes mtPulse { 50% { outline-color: rgba(245,155,45,.25); } }
     #mixTracker button:focus-visible, #mixTracker .jog:focus-visible, #mixTracker .knob:focus-visible { outline: 2px solid var(--mt-red); outline-offset: 2px; }
 
     #mixTracker .ctl { display: flex; flex-direction: column; align-items: center; gap: 3px; }
@@ -127,7 +133,7 @@
     #mixTracker .pads { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
     #mixTracker .pad {
       aspect-ratio: 1.45/1; border-radius: 4px; background: var(--mt-pad-face);
-      border: 2px solid var(--mt-org); box-shadow: inset 0 0 8px rgba(143,172,144,.18);
+      border: 2px solid var(--mt-org); box-shadow: inset 0 0 8px rgba(245,155,45,.18);
       color: var(--mt-org-dim); font-family: inherit; font-size: 8px; cursor: pointer; transition: all .1s;
     }
     #mixTracker .pad.lit { box-shadow: inset 0 0 12px rgba(255,52,52,.5), 0 0 16px rgba(255,52,52,.65) !important; }
@@ -157,26 +163,7 @@
     #mixTracker .crossfader { display: flex; flex-direction: column; align-items: center; gap: 5px; padding-top: 4px; }
     #mixTracker .crossfader input { width: 150px; }
     #mixTracker .crossfader span { font-size: 7.5px; color: var(--mt-dim); letter-spacing: .1em; }
-
-    #mixTracker .log-section { margin-top: 20px; }
-    #mixTracker .log-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
-    #mixTracker .log-head h3 { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 22px; letter-spacing: .05em; }
-    #mixTracker .log-head span { font-size: 11px; color: var(--mt-dim); }
-    #mixTracker .log {
-      background: var(--mt-panel); border: 1px solid var(--mt-line); border-radius: 10px;
-      max-height: 240px; overflow-y: auto; padding: 10px 14px; font-size: 12px; line-height: 1.9;
-    }
-    #mixTracker .log .empty { color: var(--mt-dim); }
-    #mixTracker .log .t { color: var(--mt-dim); margin-right: 10px; }
-    #mixTracker .log .tag-midi { color: var(--mt-grn); margin-right: 8px; font-weight: 600; }
-    #mixTracker .log .tag-map { color: var(--mt-red); margin-right: 8px; font-weight: 600; }
-    #mixTracker .log .tag-replay { color: var(--mt-org); margin-right: 8px; font-weight: 600; }
-    #mixTracker .log div.fresh .name { color: var(--mt-red); }
-
-    #mixTracker .advanced { margin-top: 14px; display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
-    #mixTracker .advanced span { font-size: 9.5px; color: var(--mt-dim); letter-spacing: .08em; text-transform: uppercase; margin-right: 2px; }
     @media (prefers-reduced-motion: reduce) { #mixTracker * { transition: none !important; animation: none !important; } }
-    @media (max-width: 900px) { #mixTracker { padding: 18px 10px 24px; } }
   </style>
   <script>
     (function () {
@@ -219,7 +206,7 @@
     <section class="page-hero container">
       <p class="eyebrow hero-enter">DJ Journey · Tools</p>
       <h1 class="hero-enter" style="font-size: var(--text-2xl);">The virtual deck</h1>
-      <p class="hero-enter">A DDJ-FLX4, FLX2, or XDJ-RR, rendered in the browser. Click around to drill the layout without opening Rekordbox, or plug the real controller in over USB (Chrome or Edge) and watch every pad, knob, and fader light up live as you play. Nothing here is uploaded &mdash; mappings and recordings stay in your browser.</p>
+      <p class="hero-enter">A DDJ-FLX4 or DDJ-FLX2, rendered in the browser. Click around to drill the layout without opening Rekordbox, or plug the real controller in over USB (Chrome or Edge) and watch every pad, knob, and fader light up live as you play. Nothing here is uploaded: mappings and recordings stay in your browser.</p>
       <p class="hero-enter" style="font-size: var(--text-sm); color: var(--gray);"><a class="link" href="dj.html">&larr; Back to the DJ journey</a></p>
     </section>
 
@@ -228,38 +215,36 @@
       <h2 class="reveal" style="font-size: var(--text-xl);">Choose your controller</h2>
       <p class="reveal" style="color: var(--ink-soft); max-width: var(--measure);">Pick the model from the dropdown below to switch layouts. Hit "Connect MIDI" with the controller plugged in to mirror it live, or use "Learn" to teach the page a custom mapping.</p>
 
-      <div id="mixTracker" class="reveal">
-        <div class="toolbar">
-          <select id="controllerSelect" aria-label="Choose controller"></select>
-          <button class="btn primary" id="midiBtn">Connect MIDI</button>
-          <div class="group">
-            <button class="btn" id="recBtn">Rec</button>
-            <button class="btn" id="replayBtn">Replay</button>
-            <button class="btn" id="saveSesBtn">Save</button>
-            <button class="btn" id="loadSesBtn">Load</button>
-            <button class="btn" id="videoBtn">Video</button>
-          </div>
-          <input type="file" id="loadSesFile" accept=".json" hidden>
-        </div>
-        <div class="status" id="status"></div>
+      <div class="dj-controls reveal">
+        <select id="controllerSelect" aria-label="Choose controller"></select>
+        <button class="btn btn--solid" id="midiBtn">Connect MIDI</button>
+        <button class="btn" id="recBtn">Rec moves</button>
+        <button class="btn" id="replayBtn">Replay</button>
+        <button class="btn" id="saveSesBtn">Save mix</button>
+        <button class="btn" id="loadSesBtn">Load mix</button>
+        <button class="btn" id="videoBtn">Record video</button>
+        <input type="file" id="loadSesFile" accept=".json" hidden>
+      </div>
+      <p class="dj-status" id="status"></p>
 
+      <div id="mixTracker" class="reveal">
         <div class="controller-scroll">
           <div class="controller" id="controller"></div>
         </div>
+      </div>
 
-        <div class="log-section">
-          <div class="log-head"><h3>Press Log</h3><span id="count">0 events</span></div>
-          <div class="log" id="log"><div class="empty">&mdash;</div></div>
-        </div>
+      <div class="dj-log reveal">
+        <div class="dj-log__head"><h3>Press log</h3><span id="count">0 events</span></div>
+        <div class="dj-log__body" id="log"><div class="empty">Nothing yet, click a pad or knob above.</div></div>
+      </div>
 
-        <div class="advanced">
-          <span>Advanced</span>
-          <button class="btn mini" id="learnBtn">Learn</button>
-          <button class="btn mini" id="exportBtn">Save map</button>
-          <button class="btn mini" id="importBtn">Load map</button>
-          <button class="btn mini" id="clearBtn">Clear log</button>
-          <input type="file" id="importFile" accept=".json" hidden>
-        </div>
+      <div class="dj-advanced reveal">
+        <span class="dj-advanced__label">Advanced</span>
+        <button class="chip" id="learnBtn">Learn</button>
+        <button class="chip" id="exportBtn">Save map</button>
+        <button class="chip" id="importBtn">Load map</button>
+        <button class="chip" id="clearBtn">Clear log</button>
+        <input type="file" id="importFile" accept=".json" hidden>
       </div>
     </section>
 
@@ -290,17 +275,10 @@
         loopSection: false, beatFx: false, browse: false, mic: false,
         smartCfx: false, smartFader: true, hpKnobs: ['Level'],
         channelKnobs: ['Hi','Mid','Low'], cfx: true
-      },
-      'xdj-rr': {
-        name: 'Pioneer XDJ-RR', brandTop: 'ALL-IN-ONE DJ SYSTEM', brandName: 'XDJ-RR',
-        pads: 4, padModes: ['HOT CUE','BEAT LOOP','SLIP LOOP','BEAT JUMP'],
-        loopSection: true, beatFx: true, browse: true, mic: true,
-        smartCfx: false, smartFader: false, hpKnobs: ['Mix','Level'],
-        channelKnobs: ['Trim','Hi','Mid','Low'], cfx: false
       }
     };
 
-    const PRELOADED_MAPS = {"ddj-flx4":{"144:11":"Deck 1 Play/Pause","144:12":"Deck 1 Cue","144:63":"Deck 1 Shift","144:88":"Deck 1 Beat Sync","144:16":"Deck 1 Loop In","144:17":"Deck 1 Loop Out","144:77":"Deck 1 4 Beat/Exit","144:81":"Deck 1 Loop 1/2X","144:83":"Deck 1 Loop 2X","144:27":"Deck 1 HOT CUE Mode","144:30":"Deck 1 PAD FX1 Mode","144:32":"Deck 1 BEAT JUMP Mode","144:34":"Deck 1 SAMPLER Mode","144:84":"Ch 1 Headphone Cue","145:11":"Deck 2 Play/Pause","145:12":"Deck 2 Cue","145:63":"Deck 2 Shift","145:88":"Deck 2 Beat Sync","145:16":"Deck 2 Loop In","145:17":"Deck 2 Loop Out","145:77":"Deck 2 4 Beat/Exit","145:81":"Deck 2 Loop 1/2X","145:83":"Deck 2 Loop 2X","145:27":"Deck 2 HOT CUE Mode","145:30":"Deck 2 PAD FX1 Mode","145:32":"Deck 2 BEAT JUMP Mode","145:34":"Deck 2 SAMPLER Mode","145:84":"Ch 2 Headphone Cue","176:33":"Deck 1 Jog Wheel","176:34":"Deck 1 Jog Wheel","176:35":"Deck 1 Jog Wheel","176:0":"Deck 1 Tempo Slider","176:4":"Ch 1 Trim Knob","176:7":"Ch 1 Hi Knob","176:11":"Ch 1 Mid Knob","176:15":"Ch 1 Low Knob","176:19":"Ch 1 Volume Fader","177:33":"Deck 2 Jog Wheel","177:34":"Deck 2 Jog Wheel","177:35":"Deck 2 Jog Wheel","177:0":"Deck 2 Tempo Slider","177:4":"Ch 2 Trim Knob","177:7":"Ch 2 Hi Knob","177:11":"Ch 2 Mid Knob","177:15":"Ch 2 Low Knob","177:19":"Ch 2 Volume Fader","182:23":"Ch 1 CFX Knob","182:24":"Ch 2 CFX Knob","182:31":"Crossfader","182:12":"Headphone Mix Knob","182:64":"Browse Knob","150:65":"Browse Knob","150:70":"Load Deck 1","150:71":"Load Deck 2","148:99":"FX Select","148:74":"Beat ◀","148:75":"Beat ▶","148:71":"Beat FX On/Off","149:71":"Beat FX On/Off","151:0":"Deck 1 Pad 1","151:1":"Deck 1 Pad 2","151:2":"Deck 1 Pad 3","151:3":"Deck 1 Pad 4","151:4":"Deck 1 Pad 5","151:5":"Deck 1 Pad 6","151:6":"Deck 1 Pad 7","151:7":"Deck 1 Pad 8","151:16":"Deck 1 Pad 1","151:17":"Deck 1 Pad 2","151:18":"Deck 1 Pad 3","151:19":"Deck 1 Pad 4","151:20":"Deck 1 Pad 5","151:21":"Deck 1 Pad 6","151:22":"Deck 1 Pad 7","151:23":"Deck 1 Pad 8","151:24":"Deck 1 Pad 1","151:25":"Deck 1 Pad 2","151:26":"Deck 1 Pad 3","151:27":"Deck 1 Pad 4","151:28":"Deck 1 Pad 5","151:29":"Deck 1 Pad 6","151:30":"Deck 1 Pad 7","151:31":"Deck 1 Pad 8","151:32":"Deck 1 Pad 1","151:33":"Deck 1 Pad 2","151:34":"Deck 1 Pad 3","151:35":"Deck 1 Pad 4","151:36":"Deck 1 Pad 5","151:37":"Deck 1 Pad 6","151:38":"Deck 1 Pad 7","151:39":"Deck 1 Pad 8","151:48":"Deck 1 Pad 1","151:49":"Deck 1 Pad 2","151:50":"Deck 1 Pad 3","151:51":"Deck 1 Pad 4","151:52":"Deck 1 Pad 5","151:53":"Deck 1 Pad 6","151:54":"Deck 1 Pad 7","151:55":"Deck 1 Pad 8","151:64":"Deck 1 Pad 1","151:65":"Deck 1 Pad 2","151:66":"Deck 1 Pad 3","151:67":"Deck 1 Pad 4","151:68":"Deck 1 Pad 5","151:69":"Deck 1 Pad 6","151:70":"Deck 1 Pad 7","151:71":"Deck 1 Pad 8","151:96":"Deck 1 Pad 1","151:97":"Deck 1 Pad 2","151:98":"Deck 1 Pad 3","151:99":"Deck 1 Pad 4","151:100":"Deck 1 Pad 5","151:101":"Deck 1 Pad 6","151:102":"Deck 1 Pad 7","151:103":"Deck 1 Pad 8","151:112":"Deck 1 Pad 1","151:113":"Deck 1 Pad 2","151:114":"Deck 1 Pad 3","151:115":"Deck 1 Pad 4","151:116":"Deck 1 Pad 5","151:117":"Deck 1 Pad 6","151:118":"Deck 1 Pad 7","151:119":"Deck 1 Pad 8","153:0":"Deck 2 Pad 1","153:1":"Deck 2 Pad 2","153:2":"Deck 2 Pad 3","153:3":"Deck 2 Pad 4","153:4":"Deck 2 Pad 5","153:5":"Deck 2 Pad 6","153:6":"Deck 2 Pad 7","153:7":"Deck 2 Pad 8","153:16":"Deck 2 Pad 1","153:17":"Deck 2 Pad 2","153:18":"Deck 2 Pad 3","153:19":"Deck 2 Pad 4","153:20":"Deck 2 Pad 5","153:21":"Deck 2 Pad 6","153:22":"Deck 2 Pad 7","153:23":"Deck 2 Pad 8","153:24":"Deck 2 Pad 1","153:25":"Deck 2 Pad 2","153:26":"Deck 2 Pad 3","153:27":"Deck 2 Pad 4","153:28":"Deck 2 Pad 5","153:29":"Deck 2 Pad 6","153:30":"Deck 2 Pad 7","153:31":"Deck 2 Pad 8","153:32":"Deck 2 Pad 1","153:33":"Deck 2 Pad 2","153:34":"Deck 2 Pad 3","153:35":"Deck 2 Pad 4","153:36":"Deck 2 Pad 5","153:37":"Deck 2 Pad 6","153:38":"Deck 2 Pad 7","153:39":"Deck 2 Pad 8","153:48":"Deck 2 Pad 1","153:49":"Deck 2 Pad 2","153:50":"Deck 2 Pad 3","153:51":"Deck 2 Pad 4","153:52":"Deck 2 Pad 5","153:53":"Deck 2 Pad 6","153:54":"Deck 2 Pad 7","153:55":"Deck 2 Pad 8","153:64":"Deck 2 Pad 1","153:65":"Deck 2 Pad 2","153:66":"Deck 2 Pad 3","153:67":"Deck 2 Pad 4","153:68":"Deck 2 Pad 5","153:69":"Deck 2 Pad 6","153:70":"Deck 2 Pad 7","153:71":"Deck 2 Pad 8","153:96":"Deck 2 Pad 1","153:97":"Deck 2 Pad 2","153:98":"Deck 2 Pad 3","153:99":"Deck 2 Pad 4","153:100":"Deck 2 Pad 5","153:101":"Deck 2 Pad 6","153:102":"Deck 2 Pad 7","153:103":"Deck 2 Pad 8","153:112":"Deck 2 Pad 1","153:113":"Deck 2 Pad 2","153:114":"Deck 2 Pad 3","153:115":"Deck 2 Pad 4","153:116":"Deck 2 Pad 5","153:117":"Deck 2 Pad 6","153:118":"Deck 2 Pad 7","153:119":"Deck 2 Pad 8"},"ddj-flx2":{"144:11":"Deck 1 Play/Pause","144:12":"Deck 1 Cue","144:63":"Deck 1 Shift","144:88":"Deck 1 Beat Sync","144:54":"Deck 1 Jog Wheel","144:84":"Ch 1 Headphone Cue","145:11":"Deck 2 Play/Pause","145:12":"Deck 2 Cue","145:63":"Deck 2 Shift","145:88":"Deck 2 Beat Sync","145:54":"Deck 2 Jog Wheel","145:84":"Ch 2 Headphone Cue","176:33":"Deck 1 Jog Wheel","176:34":"Deck 1 Jog Wheel","176:35":"Deck 1 Jog Wheel","176:0":"Deck 1 Tempo Slider","176:7":"Ch 1 Hi Knob","176:11":"Ch 1 Mid Knob","176:15":"Ch 1 Low Knob","176:19":"Ch 1 Volume Fader","177:33":"Deck 2 Jog Wheel","177:34":"Deck 2 Jog Wheel","177:35":"Deck 2 Jog Wheel","177:0":"Deck 2 Tempo Slider","177:7":"Ch 2 Hi Knob","177:11":"Ch 2 Mid Knob","177:15":"Ch 2 Low Knob","177:19":"Ch 2 Volume Fader","182:23":"Ch 1 CFX Knob","182:24":"Ch 2 CFX Knob","182:31":"Crossfader","182:8":"Master Level Knob","182:13":"Headphone Level Knob","150:99":"Master Cue","150:1":"Smart Fader","151:0":"Deck 1 Pad 1","151:1":"Deck 1 Pad 2","151:2":"Deck 1 Pad 3","151:3":"Deck 1 Pad 4","151:4":"Deck 1 Pad 5","151:5":"Deck 1 Pad 6","151:6":"Deck 1 Pad 7","151:7":"Deck 1 Pad 8","151:16":"Deck 1 Pad 1","151:17":"Deck 1 Pad 2","151:18":"Deck 1 Pad 3","151:19":"Deck 1 Pad 4","151:20":"Deck 1 Pad 5","151:21":"Deck 1 Pad 6","151:22":"Deck 1 Pad 7","151:23":"Deck 1 Pad 8","151:48":"Deck 1 Pad 1","151:49":"Deck 1 Pad 2","151:50":"Deck 1 Pad 3","151:51":"Deck 1 Pad 4","151:52":"Deck 1 Pad 5","151:53":"Deck 1 Pad 6","151:54":"Deck 1 Pad 7","151:55":"Deck 1 Pad 8","151:96":"Deck 1 Pad 1","151:97":"Deck 1 Pad 2","151:98":"Deck 1 Pad 3","151:99":"Deck 1 Pad 4","151:100":"Deck 1 Pad 5","151:101":"Deck 1 Pad 6","151:102":"Deck 1 Pad 7","151:103":"Deck 1 Pad 8","152:0":"Deck 1 Pad 1","152:1":"Deck 1 Pad 2","152:2":"Deck 1 Pad 3","152:3":"Deck 1 Pad 4","152:4":"Deck 1 Pad 5","152:5":"Deck 1 Pad 6","152:6":"Deck 1 Pad 7","152:7":"Deck 1 Pad 8","152:16":"Deck 1 Pad 1","152:17":"Deck 1 Pad 2","152:18":"Deck 1 Pad 3","152:19":"Deck 1 Pad 4","152:20":"Deck 1 Pad 5","152:21":"Deck 1 Pad 6","152:22":"Deck 1 Pad 7","152:23":"Deck 1 Pad 8","152:48":"Deck 1 Pad 1","152:49":"Deck 1 Pad 2","152:50":"Deck 1 Pad 3","152:51":"Deck 1 Pad 4","152:52":"Deck 1 Pad 5","152:53":"Deck 1 Pad 6","152:54":"Deck 1 Pad 7","152:55":"Deck 1 Pad 8","152:96":"Deck 1 Pad 1","152:97":"Deck 1 Pad 2","152:98":"Deck 1 Pad 3","152:99":"Deck 1 Pad 4","152:100":"Deck 1 Pad 5","152:101":"Deck 1 Pad 6","152:102":"Deck 1 Pad 7","152:103":"Deck 1 Pad 8","153:0":"Deck 2 Pad 1","153:1":"Deck 2 Pad 2","153:2":"Deck 2 Pad 3","153:3":"Deck 2 Pad 4","153:4":"Deck 2 Pad 5","153:5":"Deck 2 Pad 6","153:6":"Deck 2 Pad 7","153:7":"Deck 2 Pad 8","153:16":"Deck 2 Pad 1","153:17":"Deck 2 Pad 2","153:18":"Deck 2 Pad 3","153:19":"Deck 2 Pad 4","153:20":"Deck 2 Pad 5","153:21":"Deck 2 Pad 6","153:22":"Deck 2 Pad 7","153:23":"Deck 2 Pad 8","153:48":"Deck 2 Pad 1","153:49":"Deck 2 Pad 2","153:50":"Deck 2 Pad 3","153:51":"Deck 2 Pad 4","153:52":"Deck 2 Pad 5","153:53":"Deck 2 Pad 6","153:54":"Deck 2 Pad 7","153:55":"Deck 2 Pad 8","153:96":"Deck 2 Pad 1","153:97":"Deck 2 Pad 2","153:98":"Deck 2 Pad 3","153:99":"Deck 2 Pad 4","153:100":"Deck 2 Pad 5","153:101":"Deck 2 Pad 6","153:102":"Deck 2 Pad 7","153:103":"Deck 2 Pad 8","154:0":"Deck 2 Pad 1","154:1":"Deck 2 Pad 2","154:2":"Deck 2 Pad 3","154:3":"Deck 2 Pad 4","154:4":"Deck 2 Pad 5","154:5":"Deck 2 Pad 6","154:6":"Deck 2 Pad 7","154:7":"Deck 2 Pad 8","154:16":"Deck 2 Pad 1","154:17":"Deck 2 Pad 2","154:18":"Deck 2 Pad 3","154:19":"Deck 2 Pad 4","154:20":"Deck 2 Pad 5","154:21":"Deck 2 Pad 6","154:22":"Deck 2 Pad 7","154:23":"Deck 2 Pad 8","154:48":"Deck 2 Pad 1","154:49":"Deck 2 Pad 2","154:50":"Deck 2 Pad 3","154:51":"Deck 2 Pad 4","154:52":"Deck 2 Pad 5","154:53":"Deck 2 Pad 6","154:54":"Deck 2 Pad 7","154:55":"Deck 2 Pad 8","154:96":"Deck 2 Pad 1","154:97":"Deck 2 Pad 2","154:98":"Deck 2 Pad 3","154:99":"Deck 2 Pad 4","154:100":"Deck 2 Pad 5","154:101":"Deck 2 Pad 6","154:102":"Deck 2 Pad 7","154:103":"Deck 2 Pad 8"},"xdj-rr":{"144:11":"Deck 1 Play/Pause","144:12":"Deck 1 Cue","144:63":"Deck 1 Shift","144:88":"Deck 1 Beat Sync","144:16":"Deck 1 Loop In","144:17":"Deck 1 Loop Out","144:77":"Deck 1 4 Beat/Exit","144:84":"Ch 1 Headphone Cue","145:11":"Deck 2 Play/Pause","145:12":"Deck 2 Cue","145:63":"Deck 2 Shift","145:88":"Deck 2 Beat Sync","145:16":"Deck 2 Loop In","145:17":"Deck 2 Loop Out","145:77":"Deck 2 4 Beat/Exit","145:84":"Ch 2 Headphone Cue","176:33":"Deck 1 Jog Wheel","176:34":"Deck 1 Jog Wheel","176:35":"Deck 1 Jog Wheel","176:0":"Deck 1 Tempo Slider","177:33":"Deck 2 Jog Wheel","177:34":"Deck 2 Jog Wheel","177:35":"Deck 2 Jog Wheel","177:0":"Deck 2 Tempo Slider","151:0":"Deck 1 Pad 1","151:1":"Deck 1 Pad 2","151:2":"Deck 1 Pad 3","151:3":"Deck 1 Pad 4","151:32":"Deck 1 Pad 1","151:33":"Deck 1 Pad 2","151:34":"Deck 1 Pad 3","151:35":"Deck 1 Pad 4","151:96":"Deck 1 Pad 1","151:97":"Deck 1 Pad 2","151:98":"Deck 1 Pad 3","151:99":"Deck 1 Pad 4","151:112":"Deck 1 Pad 1","151:113":"Deck 1 Pad 2","151:114":"Deck 1 Pad 3","151:115":"Deck 1 Pad 4","153:0":"Deck 2 Pad 1","153:1":"Deck 2 Pad 2","153:2":"Deck 2 Pad 3","153:3":"Deck 2 Pad 4","153:32":"Deck 2 Pad 1","153:33":"Deck 2 Pad 2","153:34":"Deck 2 Pad 3","153:35":"Deck 2 Pad 4","153:96":"Deck 2 Pad 1","153:97":"Deck 2 Pad 2","153:98":"Deck 2 Pad 3","153:99":"Deck 2 Pad 4","153:112":"Deck 2 Pad 1","153:113":"Deck 2 Pad 2","153:114":"Deck 2 Pad 3","153:115":"Deck 2 Pad 4"}};
+    const PRELOADED_MAPS = {"ddj-flx4":{"144:11":"Deck 1 Play/Pause","144:12":"Deck 1 Cue","144:63":"Deck 1 Shift","144:88":"Deck 1 Beat Sync","144:16":"Deck 1 Loop In","144:17":"Deck 1 Loop Out","144:77":"Deck 1 4 Beat/Exit","144:81":"Deck 1 Loop 1/2X","144:83":"Deck 1 Loop 2X","144:27":"Deck 1 HOT CUE Mode","144:30":"Deck 1 PAD FX1 Mode","144:32":"Deck 1 BEAT JUMP Mode","144:34":"Deck 1 SAMPLER Mode","144:84":"Ch 1 Headphone Cue","145:11":"Deck 2 Play/Pause","145:12":"Deck 2 Cue","145:63":"Deck 2 Shift","145:88":"Deck 2 Beat Sync","145:16":"Deck 2 Loop In","145:17":"Deck 2 Loop Out","145:77":"Deck 2 4 Beat/Exit","145:81":"Deck 2 Loop 1/2X","145:83":"Deck 2 Loop 2X","145:27":"Deck 2 HOT CUE Mode","145:30":"Deck 2 PAD FX1 Mode","145:32":"Deck 2 BEAT JUMP Mode","145:34":"Deck 2 SAMPLER Mode","145:84":"Ch 2 Headphone Cue","176:33":"Deck 1 Jog Wheel","176:34":"Deck 1 Jog Wheel","176:35":"Deck 1 Jog Wheel","176:0":"Deck 1 Tempo Slider","176:4":"Ch 1 Trim Knob","176:7":"Ch 1 Hi Knob","176:11":"Ch 1 Mid Knob","176:15":"Ch 1 Low Knob","176:19":"Ch 1 Volume Fader","177:33":"Deck 2 Jog Wheel","177:34":"Deck 2 Jog Wheel","177:35":"Deck 2 Jog Wheel","177:0":"Deck 2 Tempo Slider","177:4":"Ch 2 Trim Knob","177:7":"Ch 2 Hi Knob","177:11":"Ch 2 Mid Knob","177:15":"Ch 2 Low Knob","177:19":"Ch 2 Volume Fader","182:23":"Ch 1 CFX Knob","182:24":"Ch 2 CFX Knob","182:31":"Crossfader","182:12":"Headphone Mix Knob","182:64":"Browse Knob","150:65":"Browse Knob","150:70":"Load Deck 1","150:71":"Load Deck 2","148:99":"FX Select","148:74":"Beat ◀","148:75":"Beat ▶","148:71":"Beat FX On/Off","149:71":"Beat FX On/Off","151:0":"Deck 1 Pad 1","151:1":"Deck 1 Pad 2","151:2":"Deck 1 Pad 3","151:3":"Deck 1 Pad 4","151:4":"Deck 1 Pad 5","151:5":"Deck 1 Pad 6","151:6":"Deck 1 Pad 7","151:7":"Deck 1 Pad 8","151:16":"Deck 1 Pad 1","151:17":"Deck 1 Pad 2","151:18":"Deck 1 Pad 3","151:19":"Deck 1 Pad 4","151:20":"Deck 1 Pad 5","151:21":"Deck 1 Pad 6","151:22":"Deck 1 Pad 7","151:23":"Deck 1 Pad 8","151:24":"Deck 1 Pad 1","151:25":"Deck 1 Pad 2","151:26":"Deck 1 Pad 3","151:27":"Deck 1 Pad 4","151:28":"Deck 1 Pad 5","151:29":"Deck 1 Pad 6","151:30":"Deck 1 Pad 7","151:31":"Deck 1 Pad 8","151:32":"Deck 1 Pad 1","151:33":"Deck 1 Pad 2","151:34":"Deck 1 Pad 3","151:35":"Deck 1 Pad 4","151:36":"Deck 1 Pad 5","151:37":"Deck 1 Pad 6","151:38":"Deck 1 Pad 7","151:39":"Deck 1 Pad 8","151:48":"Deck 1 Pad 1","151:49":"Deck 1 Pad 2","151:50":"Deck 1 Pad 3","151:51":"Deck 1 Pad 4","151:52":"Deck 1 Pad 5","151:53":"Deck 1 Pad 6","151:54":"Deck 1 Pad 7","151:55":"Deck 1 Pad 8","151:64":"Deck 1 Pad 1","151:65":"Deck 1 Pad 2","151:66":"Deck 1 Pad 3","151:67":"Deck 1 Pad 4","151:68":"Deck 1 Pad 5","151:69":"Deck 1 Pad 6","151:70":"Deck 1 Pad 7","151:71":"Deck 1 Pad 8","151:96":"Deck 1 Pad 1","151:97":"Deck 1 Pad 2","151:98":"Deck 1 Pad 3","151:99":"Deck 1 Pad 4","151:100":"Deck 1 Pad 5","151:101":"Deck 1 Pad 6","151:102":"Deck 1 Pad 7","151:103":"Deck 1 Pad 8","151:112":"Deck 1 Pad 1","151:113":"Deck 1 Pad 2","151:114":"Deck 1 Pad 3","151:115":"Deck 1 Pad 4","151:116":"Deck 1 Pad 5","151:117":"Deck 1 Pad 6","151:118":"Deck 1 Pad 7","151:119":"Deck 1 Pad 8","153:0":"Deck 2 Pad 1","153:1":"Deck 2 Pad 2","153:2":"Deck 2 Pad 3","153:3":"Deck 2 Pad 4","153:4":"Deck 2 Pad 5","153:5":"Deck 2 Pad 6","153:6":"Deck 2 Pad 7","153:7":"Deck 2 Pad 8","153:16":"Deck 2 Pad 1","153:17":"Deck 2 Pad 2","153:18":"Deck 2 Pad 3","153:19":"Deck 2 Pad 4","153:20":"Deck 2 Pad 5","153:21":"Deck 2 Pad 6","153:22":"Deck 2 Pad 7","153:23":"Deck 2 Pad 8","153:24":"Deck 2 Pad 1","153:25":"Deck 2 Pad 2","153:26":"Deck 2 Pad 3","153:27":"Deck 2 Pad 4","153:28":"Deck 2 Pad 5","153:29":"Deck 2 Pad 6","153:30":"Deck 2 Pad 7","153:31":"Deck 2 Pad 8","153:32":"Deck 2 Pad 1","153:33":"Deck 2 Pad 2","153:34":"Deck 2 Pad 3","153:35":"Deck 2 Pad 4","153:36":"Deck 2 Pad 5","153:37":"Deck 2 Pad 6","153:38":"Deck 2 Pad 7","153:39":"Deck 2 Pad 8","153:48":"Deck 2 Pad 1","153:49":"Deck 2 Pad 2","153:50":"Deck 2 Pad 3","153:51":"Deck 2 Pad 4","153:52":"Deck 2 Pad 5","153:53":"Deck 2 Pad 6","153:54":"Deck 2 Pad 7","153:55":"Deck 2 Pad 8","153:64":"Deck 2 Pad 1","153:65":"Deck 2 Pad 2","153:66":"Deck 2 Pad 3","153:67":"Deck 2 Pad 4","153:68":"Deck 2 Pad 5","153:69":"Deck 2 Pad 6","153:70":"Deck 2 Pad 7","153:71":"Deck 2 Pad 8","153:96":"Deck 2 Pad 1","153:97":"Deck 2 Pad 2","153:98":"Deck 2 Pad 3","153:99":"Deck 2 Pad 4","153:100":"Deck 2 Pad 5","153:101":"Deck 2 Pad 6","153:102":"Deck 2 Pad 7","153:103":"Deck 2 Pad 8","153:112":"Deck 2 Pad 1","153:113":"Deck 2 Pad 2","153:114":"Deck 2 Pad 3","153:115":"Deck 2 Pad 4","153:116":"Deck 2 Pad 5","153:117":"Deck 2 Pad 6","153:118":"Deck 2 Pad 7","153:119":"Deck 2 Pad 8"},"ddj-flx2":{"144:11":"Deck 1 Play/Pause","144:12":"Deck 1 Cue","144:63":"Deck 1 Shift","144:88":"Deck 1 Beat Sync","144:54":"Deck 1 Jog Wheel","144:84":"Ch 1 Headphone Cue","145:11":"Deck 2 Play/Pause","145:12":"Deck 2 Cue","145:63":"Deck 2 Shift","145:88":"Deck 2 Beat Sync","145:54":"Deck 2 Jog Wheel","145:84":"Ch 2 Headphone Cue","176:33":"Deck 1 Jog Wheel","176:34":"Deck 1 Jog Wheel","176:35":"Deck 1 Jog Wheel","176:0":"Deck 1 Tempo Slider","176:7":"Ch 1 Hi Knob","176:11":"Ch 1 Mid Knob","176:15":"Ch 1 Low Knob","176:19":"Ch 1 Volume Fader","177:33":"Deck 2 Jog Wheel","177:34":"Deck 2 Jog Wheel","177:35":"Deck 2 Jog Wheel","177:0":"Deck 2 Tempo Slider","177:7":"Ch 2 Hi Knob","177:11":"Ch 2 Mid Knob","177:15":"Ch 2 Low Knob","177:19":"Ch 2 Volume Fader","182:23":"Ch 1 CFX Knob","182:24":"Ch 2 CFX Knob","182:31":"Crossfader","182:8":"Master Level Knob","182:13":"Headphone Level Knob","150:99":"Master Cue","150:1":"Smart Fader","151:0":"Deck 1 Pad 1","151:1":"Deck 1 Pad 2","151:2":"Deck 1 Pad 3","151:3":"Deck 1 Pad 4","151:4":"Deck 1 Pad 5","151:5":"Deck 1 Pad 6","151:6":"Deck 1 Pad 7","151:7":"Deck 1 Pad 8","151:16":"Deck 1 Pad 1","151:17":"Deck 1 Pad 2","151:18":"Deck 1 Pad 3","151:19":"Deck 1 Pad 4","151:20":"Deck 1 Pad 5","151:21":"Deck 1 Pad 6","151:22":"Deck 1 Pad 7","151:23":"Deck 1 Pad 8","151:48":"Deck 1 Pad 1","151:49":"Deck 1 Pad 2","151:50":"Deck 1 Pad 3","151:51":"Deck 1 Pad 4","151:52":"Deck 1 Pad 5","151:53":"Deck 1 Pad 6","151:54":"Deck 1 Pad 7","151:55":"Deck 1 Pad 8","151:96":"Deck 1 Pad 1","151:97":"Deck 1 Pad 2","151:98":"Deck 1 Pad 3","151:99":"Deck 1 Pad 4","151:100":"Deck 1 Pad 5","151:101":"Deck 1 Pad 6","151:102":"Deck 1 Pad 7","151:103":"Deck 1 Pad 8","152:0":"Deck 1 Pad 1","152:1":"Deck 1 Pad 2","152:2":"Deck 1 Pad 3","152:3":"Deck 1 Pad 4","152:4":"Deck 1 Pad 5","152:5":"Deck 1 Pad 6","152:6":"Deck 1 Pad 7","152:7":"Deck 1 Pad 8","152:16":"Deck 1 Pad 1","152:17":"Deck 1 Pad 2","152:18":"Deck 1 Pad 3","152:19":"Deck 1 Pad 4","152:20":"Deck 1 Pad 5","152:21":"Deck 1 Pad 6","152:22":"Deck 1 Pad 7","152:23":"Deck 1 Pad 8","152:48":"Deck 1 Pad 1","152:49":"Deck 1 Pad 2","152:50":"Deck 1 Pad 3","152:51":"Deck 1 Pad 4","152:52":"Deck 1 Pad 5","152:53":"Deck 1 Pad 6","152:54":"Deck 1 Pad 7","152:55":"Deck 1 Pad 8","152:96":"Deck 1 Pad 1","152:97":"Deck 1 Pad 2","152:98":"Deck 1 Pad 3","152:99":"Deck 1 Pad 4","152:100":"Deck 1 Pad 5","152:101":"Deck 1 Pad 6","152:102":"Deck 1 Pad 7","152:103":"Deck 1 Pad 8","153:0":"Deck 2 Pad 1","153:1":"Deck 2 Pad 2","153:2":"Deck 2 Pad 3","153:3":"Deck 2 Pad 4","153:4":"Deck 2 Pad 5","153:5":"Deck 2 Pad 6","153:6":"Deck 2 Pad 7","153:7":"Deck 2 Pad 8","153:16":"Deck 2 Pad 1","153:17":"Deck 2 Pad 2","153:18":"Deck 2 Pad 3","153:19":"Deck 2 Pad 4","153:20":"Deck 2 Pad 5","153:21":"Deck 2 Pad 6","153:22":"Deck 2 Pad 7","153:23":"Deck 2 Pad 8","153:48":"Deck 2 Pad 1","153:49":"Deck 2 Pad 2","153:50":"Deck 2 Pad 3","153:51":"Deck 2 Pad 4","153:52":"Deck 2 Pad 5","153:53":"Deck 2 Pad 6","153:54":"Deck 2 Pad 7","153:55":"Deck 2 Pad 8","153:96":"Deck 2 Pad 1","153:97":"Deck 2 Pad 2","153:98":"Deck 2 Pad 3","153:99":"Deck 2 Pad 4","153:100":"Deck 2 Pad 5","153:101":"Deck 2 Pad 6","153:102":"Deck 2 Pad 7","153:103":"Deck 2 Pad 8","154:0":"Deck 2 Pad 1","154:1":"Deck 2 Pad 2","154:2":"Deck 2 Pad 3","154:3":"Deck 2 Pad 4","154:4":"Deck 2 Pad 5","154:5":"Deck 2 Pad 6","154:6":"Deck 2 Pad 7","154:7":"Deck 2 Pad 8","154:16":"Deck 2 Pad 1","154:17":"Deck 2 Pad 2","154:18":"Deck 2 Pad 3","154:19":"Deck 2 Pad 4","154:20":"Deck 2 Pad 5","154:21":"Deck 2 Pad 6","154:22":"Deck 2 Pad 7","154:23":"Deck 2 Pad 8","154:48":"Deck 2 Pad 1","154:49":"Deck 2 Pad 2","154:50":"Deck 2 Pad 3","154:51":"Deck 2 Pad 4","154:52":"Deck 2 Pad 5","154:53":"Deck 2 Pad 6","154:54":"Deck 2 Pad 7","154:55":"Deck 2 Pad 8","154:96":"Deck 2 Pad 1","154:97":"Deck 2 Pad 2","154:98":"Deck 2 Pad 3","154:99":"Deck 2 Pad 4","154:100":"Deck 2 Pad 5","154:101":"Deck 2 Pad 6","154:102":"Deck 2 Pad 7","154:103":"Deck 2 Pad 8"}};
 
     let currentId = 'ddj-flx4';
     const mappings = {};
@@ -459,7 +437,7 @@
     function setStatus(html){ statusEl.innerHTML = html; }
     learnBtn.addEventListener('click', () => {
       learnOn = !learnOn;
-      learnBtn.classList.toggle('rec', learnOn);
+      learnBtn.classList.toggle('is-active', learnOn);
       if (armedEl){ armedEl.classList.remove('armed'); armedEl = null; }
       setStatus(learnOn ? '<span class="warn">Learn: click a control on screen, then press it on the hardware.</span>' : '');
     });
@@ -553,7 +531,7 @@
           let names = [];
           access.inputs.forEach(inp => { inp.onmidimessage = onMIDI; names.push(inp.name); });
           midiReady = names.length > 0;
-          $('midiBtn').classList.toggle('on', midiReady);
+          $('midiBtn').classList.toggle('is-connected', midiReady);
           $('midiBtn').textContent = midiReady ? 'MIDI Connected' : 'Connect MIDI';
           setStatus(midiReady ? `<b>Connected:</b> ${names.join(', ')}` : '<span class="warn">No device found. Plug in over USB and click again.</span>');
         };
@@ -615,14 +593,14 @@
     const recBtn = $('recBtn'), replayBtn = $('replayBtn');
     recBtn.addEventListener('click', () => {
       recOn = !recOn;
-      recBtn.classList.toggle('rec', recOn);
+      recBtn.classList.toggle('is-recording', recOn);
       if (recOn){
         sessionEvents = []; recStart = Date.now();
         recBtn.textContent = 'Stop';
         setStatus('<span class="warn">Recording…</span>');
       } else {
         lastSession = { controller: currentId, recordedAt: new Date().toISOString(), events: sessionEvents };
-        recBtn.textContent = 'Rec';
+        recBtn.textContent = 'Rec moves';
         setStatus(`<b>${sessionEvents.length} moves recorded.</b>`);
       }
     });
@@ -695,8 +673,8 @@
           a.href = URL.createObjectURL(blob);
           a.download = `mix-video-${Date.now()}.webm`;
           a.click(); URL.revokeObjectURL(a.href);
-          videoBtn.textContent = 'Video';
-          videoBtn.classList.remove('rec');
+          videoBtn.textContent = 'Record video';
+          videoBtn.classList.remove('is-recording');
           setStatus('<b>Video saved.</b>');
         };
         stream.getVideoTracks()[0].addEventListener('ended', () => {
@@ -704,7 +682,7 @@
         });
         mediaRec.start();
         videoBtn.textContent = 'Stop';
-        videoBtn.classList.add('rec');
+        videoBtn.classList.add('is-recording');
         setStatus('<span class="warn">Recording video…</span>');
       } catch {
         setStatus('<span class="warn">Video capture cancelled.</span>');
