@@ -138,6 +138,24 @@ either open `localhost:8000` directly or use the Browser pane's
 
 Reverse chronological. Each entry is a commit already on `main` unless noted.
 
+- **Rewrite homepage/DJ copy, real vinyl SVG with a triple-click easter egg**
+  Rewrote the About intro, career summary line, interests card copy, and all
+  four "Now" columns on `index.html`; added an Uncle Iroh quote (new
+  `.about__quote` style in `main.css`). Fixed career timeline: dropped the
+  "NA Lead for CoE of Network Design" suffix from the Miebach Senior
+  Consultant title (kept the achievement bullet) and corrected all role date
+  ranges to exact months per the résumé PDF. Simplified the education major
+  line and dropped the Kelley Honors Program bullet; added a "Message me on
+  LinkedIn" button next to the résumé download. Removed the visible email
+  address and copy-to-clipboard button from Contact (and the now-dead
+  `initCopyEmail`/`.copy-btn`/`.contact__email` code) in favor of a line
+  explaining the form forwards to email. Rewrote `dj.html`'s hero intro and
+  Virtual Deck section copy. Replaced the footer's 💿 emoji (read as a CD)
+  with an inline SVG vinyl record — concentric grooves, sage label, spindle
+  hole — across all six pages that have the footer easter egg; the existing
+  `spin` keyframe (1.8s/rotation, matching real 33⅓ RPM) is unchanged.
+  Clicking it 3 times in one browser session (`sessionStorage` counter,
+  resets after firing) opens a YouTube link in a new tab.
 - **Polish DJ controller UI: borderless select, MIDI status pill, clearer labels**
   Removed the boxed border from the controller-select dropdown (custom
   chevron, no background). Turned Connect MIDI into a right-aligned

@@ -203,27 +203,6 @@ function initWritingIndex() {
 }
 
 /* --------------------------------------------------------------------------
-   Copy email button
-   -------------------------------------------------------------------------- */
-function initCopyEmail() {
-  const btn = $("#copyEmail");
-  if (!btn) return;
-  btn.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(btn.dataset.email);
-      btn.textContent = "Copied";
-      btn.classList.add("is-copied");
-      setTimeout(() => {
-        btn.textContent = "Copy";
-        btn.classList.remove("is-copied");
-      }, 2000);
-    } catch {
-      btn.textContent = "Press Ctrl+C";
-    }
-  });
-}
-
-/* --------------------------------------------------------------------------
    Contact form
    Swap the mailto fallback for a Formspree/Netlify endpoint when hosting.
    -------------------------------------------------------------------------- */
@@ -257,13 +236,24 @@ function initTabTitle() {
 }
 
 /* --------------------------------------------------------------------------
-   Easter egg: the footer record spins when clicked
+   Easter egg: the footer record spins when clicked. Three clicks in the
+   same browser session cues up a track.
    -------------------------------------------------------------------------- */
 function initVinyl() {
   const vinyl = $("#vinyl");
   if (!vinyl) return;
+  const TRACK_URL = "https://www.youtube.com/watch?v=CdqoNKCCt7A";
+
   vinyl.addEventListener("click", () => {
     vinyl.classList.toggle("is-spinning");
+
+    const clicks = Number(sessionStorage.getItem("vinylClicks") || 0) + 1;
+    if (clicks >= 3) {
+      sessionStorage.setItem("vinylClicks", "0");
+      window.open(TRACK_URL, "_blank", "noopener");
+    } else {
+      sessionStorage.setItem("vinylClicks", String(clicks));
+    }
   });
 }
 
@@ -288,7 +278,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initTimeline();
   initRecentPosts();
   initWritingIndex();
-  initCopyEmail();
   initContactForm();
   initTabTitle();
   initVinyl();
